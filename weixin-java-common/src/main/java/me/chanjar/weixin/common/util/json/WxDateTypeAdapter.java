@@ -35,7 +35,9 @@ public class WxDateTypeAdapter extends TypeAdapter<Date> {
         in.nextNull();
         return null;
       case NUMBER:
-        return new Date(in.nextInt() * 1000);
+        // 微信返回的是秒级时间戳，需转为毫秒；此处必须用 long 读取并运算，
+        // 否则 in.nextInt() * 1000 会发生 int 溢出，导致解析出错误的时间
+        return new Date(in.nextLong() * 1000L);
       default:
         throw new JsonParseException("Expected NUMBER but was " + peek);
     }
